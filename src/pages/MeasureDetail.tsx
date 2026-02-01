@@ -1,5 +1,5 @@
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, ExternalLink, Calendar, Users } from 'lucide-react';
+import { ArrowLeft, ExternalLink, Calendar } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { motion } from 'framer-motion';
 import { useMeasure } from '../hooks/useMeasures';
@@ -8,10 +8,11 @@ import { Card } from '../components/ui/Card';
 import { Badge } from '../components/ui/Badge';
 import { CommentSection } from '../components/CommentSection';
 import { Skeleton } from '../components/ui/Skeleton';
+import { Drucksache } from '../services/api';
 
 export function MeasureDetail() {
   const { id } = useParams<{ id: string }>();
-  const { data: measure, isLoading } = useMeasure(id!);
+  const { data: measureData, isLoading } = useMeasure(id!);
   const { data: userVote } = useUserVote(id!);
 
   if (isLoading) {
@@ -24,7 +25,7 @@ export function MeasureDetail() {
     );
   }
 
-  if (!measure) {
+  if (!measureData) {
     return (
       <div className="text-center py-12">
         <h2 className="text-2xl font-bold text-gray-900 mb-4">
@@ -37,10 +38,12 @@ export function MeasureDetail() {
     );
   }
 
-  const totals = (measure as any).totals || {
-    pro: (measure as any).votes?.YES || 0,
-    contra: (measure as any).votes?.NO || 0,
-    abstain: (measure as any).votes?.ABSTAIN || 0,
+  const measure = measureData as any;
+
+  const totals = measure.totals || {
+    pro: measure.votes?.YES || 0,
+    contra: measure.votes?.NO || 0,
+    abstain: measure.votes?.ABSTAIN || 0,
   };
 
   const totalVotes = totals.pro + totals.contra + totals.abstain;
@@ -52,12 +55,12 @@ export function MeasureDetail() {
     ? Math.ceil((new Date(measure.endAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
     : 0;
 
-  const displayTitle = (measure as any).titel || measure.title;
-  const displaySummary = (measure as any).abstract || measure.summary;
-  const displayCategory = (measure as any).ressort || measure.category;
-  const displayId = (measure as any)._id || measure.id;
+  const displayTitle = measure.titel || measure.title;
+  const displaySummary = measure.abstract || measure.summary;
+  const displayCategory = measure.ressort || measure.category;
+  const displayId = measure._id || measure.id;
 
-  const createdAt = (measure as any).datum || (measure as any).createdAt;
+  const createdAt = measure.datum || measure.createdAt;
   const formattedDate = createdAt 
     ? new Date(createdAt).toLocaleDateString('de-DE', {
         day: '2-digit',
@@ -80,13 +83,13 @@ export function MeasureDetail() {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="space-y-4 flex-1">
             <div className="flex items-center gap-2 flex-wrap">
-              <Badge variant={measure.origin === 'user' ? 'warning' : 'primary'} className="px-3 py-1 text-xs uppercase tracking-wider font-bold">
+              <Badge variant={measure.origin === 'user' ? 'warning' : 'primary'}>
                 {measure.origin === 'user' ? 'Bürgerentwurf' : displayCategory}
               </Badge>
-              {measure.status === 'draft' && <Badge variant="neutral">Entwurf</Badge>}
-              {((measure as any).dokumentnummer || measure.oracle?.dokumentnummer) && (
+              {measure.status === 'draft' && <Badge variant="default">Entwurf</Badge>}
+              {(measure.dokumentnummer || measure.oracle?.dokumentnummer) && (
                 <span className="text-sm font-mono text-gray-400 bg-gray-100 px-2 py-0.5 rounded">
-                  { (measure as any).dokumentnummer || measure.oracle.dokumentnummer }
+                  { measure.dokumentnummer || measure.oracle?.dokumentnummer }
                 </span>
               )}
             </div>
@@ -199,9 +202,9 @@ export function MeasureDetail() {
                 <span className="text-gray-400 text-sm">Gesamtstimmen:</span>
                 <span className="text-xl font-bold">{totalVotes}</span>
               </div>
-              {(measure as any).quorum && (
+              {measure.quorum && (
                 <div className="bg-white/5 rounded-lg p-3 text-xs text-gray-300">
-                  Erforderliches Quorum: <span className="text-white font-bold">{(measure as any).quorum}</span>
+                  Erforderliches Quorum: <span className="text-white font-bold">{measure.quorum}</span>
                 </div>
               )}
             </div>
@@ -214,11 +217,11 @@ export function MeasureDetail() {
             )}
           </Card>
 
-          {((measure as any).pdfUrl || (measure.sources && measure.sources.length > 0)) && (
+          {(measure.pdfUrl || (measure.sources && measure.sources.length > 0)) && (
             <Card className="p-6 border-gray-100 shadow-sm">
               <h3 className="font-bold text-gray-900 mb-4">Dokumente</h3>
               <a
-                href={(measure as any).pdfUrl || measure.sources[0].url}
+                href={measure.pdfUrl || measure.sources[0].url}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors group"
