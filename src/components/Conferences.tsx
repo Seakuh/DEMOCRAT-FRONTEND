@@ -40,6 +40,7 @@ const Conferences: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [openAccordion, setOpenAccordion] = useState<number | null>(null);
+  const [nextSessionIndex, setNextSessionIndex] = useState<number | null>(null);
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -72,7 +73,6 @@ const Conferences: React.FC = () => {
         }));
 
         // Sort tagesordnungen by date ascending
-        // Date format in XML is DD.MM.YYYY, need to convert for comparison
         parsedTagesordnungen.sort((a, b) => {
           const dateA = a.date.split('.').reverse().join('');
           const dateB = b.date.split('.').reverse().join('');
@@ -80,6 +80,21 @@ const Conferences: React.FC = () => {
         }).reverse();
 
         setData({ tagesordnungen: parsedTagesordnungen });
+        
+        // Find and highlight/open the next session
+        const now = new Date();
+        now.setHours(0, 0, 0, 0);
+        const nextIdx = parsedTagesordnungen.findIndex(to => {
+          const [day, month, year] = to.date.split('.').map(Number);
+          const sessionDate = new Date(year, month - 1, day);
+          return sessionDate >= now;
+        });
+
+        if (nextIdx !== -1) {
+          setNextSessionIndex(nextIdx);
+          setOpenAccordion(nextIdx);
+        }
+
         setError(null);
       } catch (err) {
         if (err instanceof Error && err.name === 'AbortError') {
@@ -127,27 +142,43 @@ const Conferences: React.FC = () => {
   return (
     <div className="space-y-4">
       <h3 className="text-xl font-semibold text-gray-800 mb-4">Aktuelle Tagesordnungen des Bundestages</h3>
-      {data.tagesordnungen.map((to, index) => (
-        <div key={`${to.date}-${to.sitzungsnummer}`} className="border border-gray-200 rounded-lg overflow-hidden">
-          <button
-            onClick={() => toggleAccordion(index)}
-            className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
-            aria-expanded={openAccordion === index}
-            aria-controls={`accordion-content-${index}`}
-            id={`accordion-button-${index}`}
+      {data.tagesordnungen.map((to, index) => {
+        const isNextSession = index === nextSessionIndex;
+        return (
+          <div 
+            key={`${to.date}-${to.sitzungsnummer}`} 
+            className={`border rounded-lg overflow-hidden transition-all duration-500 ${
+              isNextSession 
+                ? 'border-red-200 shadow-[0_0_15px_rgba(239,68,68,0.1)] ring-1 ring-red-100' 
+                : 'border-gray-200'
+            }`}
           >
-            <div className="flex flex-col items-start text-left">
-              <span className="font-bold text-gray-900">{to.name}</span>
-              <span className="text-sm text-gray-600">
-                Sitzung Nr. {to.sitzungsnummer} • {to.date}
-              </span>
-            </div>
-            {openAccordion === index ? (
-              <ChevronUp className="h-5 w-5 text-gray-500" />
-            ) : (
-              <ChevronDown className="h-5 w-5 text-gray-500" />
-            )}
-          </button>
+            <button
+              onClick={() => toggleAccordion(index)}
+              className={`w-full flex items-center justify-between p-4 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                isNextSession ? 'bg-red-50/30 hover:bg-red-50/50' : 'bg-gray-50 hover:bg-gray-100'
+              }`}
+              aria-expanded={openAccordion === index}
+              aria-controls={`accordion-content-${index}`}
+              id={`accordion-button-${index}`}
+            >
+              <div className="flex flex-col items-start text-left">
+                <div className="flex items-center gap-2">
+                  <span className="font-bold text-gray-900">{to.name}</span>
+                  {isNextSession && (
+                    <span className="flex h-2 w-2 rounded-full bg-red-500 animate-pulse" title="Nächste Sitzung"></span>
+                  )}
+                </div>
+                <span className="text-sm text-gray-600">
+                  Sitzung Nr. {to.sitzungsnummer} • {to.date}
+                </span>
+              </div>
+              {openAccordion === index ? (
+                <ChevronUp className={`h-5 w-5 ${isNextSession ? 'text-red-400' : 'text-gray-500'}`} />
+              ) : (
+                <ChevronDown className={`h-5 w-5 ${isNextSession ? 'text-red-400' : 'text-gray-500'}`} />
+              )}
+            </button>
 
           <div
             id={`accordion-content-${index}`}
@@ -208,7 +239,8 @@ const Conferences: React.FC = () => {
             </table>
           </div>
         </div>
-      ))}
+      );
+    })}
     </div>
   );
 };
