@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ThumbsUp, ThumbsDown, Minus, MessageSquare, ExternalLink, Calendar } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, Minus, MessageSquare, ExternalLink, Calendar, Briefcase, Shield, Leaf, Landmark, Heart, GraduationCap, Scale, Globe, Zap, Truck, Users } from 'lucide-react';
 import { Measure, VoteChoice } from '../types';
 import { Card } from './ui/Card';
 import { Button } from './ui/Button';
@@ -70,6 +70,22 @@ export function VoteCard({ measure }: VoteCardProps) {
   const displaySummary = (measure as any).abstract || measure.summary;
   const displayCategory = (measure as any).ressort || measure.category;
 
+  const getCategoryIcon = (category: string) => {
+    const cat = category?.toLowerCase() || '';
+    if (cat.includes('arbeit')) return <Briefcase className="w-12 h-12 text-primary/20" />;
+    if (cat.includes('verteidigung')) return <Shield className="w-12 h-12 text-primary/20" />;
+    if (cat.includes('umwelt')) return <Leaf className="w-12 h-12 text-primary/20" />;
+    if (cat.includes('finanzen') || cat.includes('wirtschaft')) return <Landmark className="w-12 h-12 text-primary/20" />;
+    if (cat.includes('gesundheit')) return <Heart className="w-12 h-12 text-primary/20" />;
+    if (cat.includes('bildung')) return <GraduationCap className="w-12 h-12 text-primary/20" />;
+    if (cat.includes('justiz') || cat.includes('recht')) return <Scale className="w-12 h-12 text-primary/20" />;
+    if (cat.includes('auswärtiges') || cat.includes('europa')) return <Globe className="w-12 h-12 text-primary/20" />;
+    if (cat.includes('energie')) return <Zap className="w-12 h-12 text-primary/20" />;
+    if (cat.includes('verkehr')) return <Truck className="w-12 h-12 text-primary/20" />;
+    if (cat.includes('familie') || cat.includes('soziales')) return <Users className="w-12 h-12 text-primary/20" />;
+    return <Landmark className="w-12 h-12 text-primary/20" />;
+  };
+
   const createdAt = (measure as any).datum || (measure as any).createdAt;
   const formattedDate = createdAt 
     ? new Date(createdAt).toLocaleDateString('de-DE', {
@@ -85,27 +101,38 @@ export function VoteCard({ measure }: VoteCardProps) {
         e.preventDefault();
         window.location.href = `/measure/${displayId}`;
       }}>
-        <div className="flex-1 space-y-2 w-full">
-          <div className="flex items-center gap-2 flex-wrap">
-            <Badge variant={measure.origin === 'user' ? 'warning' : 'primary'}>
-              {measure.origin === 'user' ? 'Bürgerentwurf' : displayCategory}
-            </Badge>
-            {measure.status === 'draft' && <Badge variant="default">Entwurf</Badge>}
-            {((measure as any).dokumentnummer || measure.oracle?.dokumentnummer) && (
-              <span className="text-[10px] md:text-xs text-gray-500 font-mono">
-                {(measure as any).dokumentnummer || measure.oracle?.dokumentnummer}
-              </span>
+        <div className="flex-1 flex flex-row items-start justify-between gap-6 w-full">
+          <div className="space-y-2 flex-1">
+            
+            <div className="flex items-center gap-2 flex-wrap">
+              <Badge variant={measure.origin === 'user' ? 'warning' : 'primary'}>
+                {measure.origin === 'user' ? 'Bürgerentwurf' : displayCategory}
+              </Badge>
+              {measure.status === 'draft' && <Badge variant="default">Entwurf</Badge>}
+              {((measure as any).dokumentnummer || measure.oracle?.dokumentnummer) && (
+                <span className="text-[10px] md:text-xs text-gray-500 font-mono">
+                  {(measure as any).dokumentnummer || measure.oracle?.dokumentnummer}
+                </span>
+              )}
+            </div>
+            {/* <div className="hidden md:flex items-center justify-center p-4 bg-gray-50 rounded-2xl self-center">
+            {getCategoryIcon(displayCategory)}
+          </div> */}
+            <h3 className="text-lg md:text-xl font-bold text-gray-900 leading-tight">{displayTitle}</h3>
+            <p
+              className="text-gray-600 max-w-2xl min-w-[320px] md:min-w-[500px] md:max-w-[700px] text-base md:text-[17px] leading-relaxed my-1 break-words"
+            >
+              {displaySummary}
+            </p>
+
+            {measure.origin === 'user' && measure.submittedBy && (
+              <p className="text-[10px] md:text-xs text-gray-500">
+                Eingereicht von {measure.submittedBy.displayName}
+              </p>
             )}
           </div>
 
-          <h3 className="text-lg md:text-xl font-bold text-gray-900 leading-tight">{displayTitle}</h3>
-          <p className="text-gray-600 text-sm line-clamp-2 md:line-clamp-3">{displaySummary}</p>
-
-          {measure.origin === 'user' && measure.submittedBy && (
-            <p className="text-[10px] md:text-xs text-gray-500">
-              Eingereicht von {measure.submittedBy.displayName}
-            </p>
-          )}
+       
         </div>
 
         <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-start w-full sm:w-auto gap-2 pt-2 sm:pt-0 border-t sm:border-t-0 border-gray-100">

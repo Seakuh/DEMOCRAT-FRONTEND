@@ -189,7 +189,7 @@ export function Dashboard() {
         </Card>
       )} */}
 
-      {!dipError && dipData && (
+      {/* {!dipError && dipData && (
         <Card className="p-4 bg-success/5 border-success/20">
           <div className="flex items-start gap-3">
             <CheckCircle className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
@@ -203,7 +203,7 @@ export function Dashboard() {
             </div>
           </div>
         </Card>
-      )}
+      )} */}
 
       <div>
         <div className="flex items-center gap-2 mb-6">
