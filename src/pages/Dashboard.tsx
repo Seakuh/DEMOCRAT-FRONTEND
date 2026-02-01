@@ -1,9 +1,8 @@
 import { useState } from 'react';
-import { AlertCircle, CheckCircle, Loader, RefreshCw, Search, Calendar as CalendarIcon, X as XIcon, Tag } from 'lucide-react';
+import { CheckCircle, Loader, Search, Calendar as CalendarIcon, X as XIcon, Tag } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useMeasures, useCategories } from '../hooks/useMeasures';
 import { useDipGesetzentwuerfe } from '../hooks/useDipOracle';
-import { Composer } from '../components/Composer';
 import { VoteCard } from '../components/VoteCard';
 import { VoteCardSkeleton } from '../components/ui/Skeleton';
 import { Card } from '../components/ui/Card';
@@ -69,7 +68,7 @@ export function Dashboard() {
         </p>
       </div>
 
-      <Composer />
+      {/* <Composer /> */}
 
       <div className="space-y-4">
         {/* Search bar: full width */}
