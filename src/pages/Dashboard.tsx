@@ -10,6 +10,7 @@ import { MeasureStatus } from '../types';
 import { syncApi, Drucksache } from '../services/api';
 import { Button } from '../components/ui/Button';
 import Conferences from '../components/Conferences';
+import NewsSlider from '../components/NewsSlider';
 
 export function Dashboard() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -68,6 +69,8 @@ export function Dashboard() {
           Beteiligen Sie sich an der demokratischen Entscheidungsfindung
         </p>
       </div>
+
+      <NewsSlider />
 
       {/* <Composer /> */}
 
