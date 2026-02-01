@@ -72,31 +72,26 @@ export function Dashboard() {
       <Composer />
 
       <div className="space-y-4">
-        <div className="relative flex gap-2">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Suchen nach Titel, Inhalt oder Drucksachennummer..."
-              className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-          <Button
-            variant="ghost"
-            onClick={() => setShowFilters(!showFilters)}
-            className={`flex items-center gap-2 border ${showFilters ? 'bg-primary/10 border-primary text-primary' : 'bg-white border-gray-200'}`}
-          >
-            <CalendarIcon className="w-5 h-5" />
-            <span className="hidden sm:inline">Zeitraum</span>
-          </Button>
-          <div className="relative">
+        {/* Search bar: full width */}
+        <div className="relative w-full">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+          <input
+            type="text"
+            placeholder="Suchen nach Titel, Inhalt oder Drucksachennummer..."
+            className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+        {/* Zeitraum and Kategorie: next row, side by side */}
+        <div className="flex flex-col gap-2 sm:flex-row sm:gap-2 mt-2">
+
+          <div className="relative w-full">
             <Tag className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
-              className={`pl-9 pr-8 py-3 bg-white border rounded-xl shadow-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all appearance-none cursor-pointer text-sm ${
+              className={`w-full pl-9 pr-8 py-3 bg-white border rounded-xl shadow-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all appearance-none cursor-pointer text-sm ${
                 categoryFilter ? 'border-primary text-primary' : 'border-gray-200 text-gray-700'
               }`}
             >
@@ -107,6 +102,18 @@ export function Dashboard() {
                 </option>
               ))}
             </select>
+          </div>
+          <div className="relative w-full sm:w-auto">
+            <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+            <button
+              type="button"
+              onClick={() => setShowFilters(!showFilters)}
+              className={`w-full sm:w-auto pl-9 pr-8 py-3 bg-white border rounded-xl shadow-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all appearance-none cursor-pointer text-sm flex items-center gap-2 ${
+                showFilters ? 'border-primary text-primary bg-primary/10' : 'border-gray-200 text-gray-700'
+              }`}
+            >
+              <span className="sm:inline">Zeitraum</span>
+            </button>
           </div>
         </div>
 

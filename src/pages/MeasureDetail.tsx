@@ -8,7 +8,6 @@ import { Card } from '../components/ui/Card';
 import { Badge } from '../components/ui/Badge';
 import { CommentSection } from '../components/CommentSection';
 import { Skeleton } from '../components/ui/Skeleton';
-import { Drucksache } from '../services/api';
 
 export function MeasureDetail() {
   const { id } = useParams<{ id: string }>();

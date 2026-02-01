@@ -80,8 +80,11 @@ export function VoteCard({ measure }: VoteCardProps) {
     : '';
 
   return (
-    <Card className="p-4 md:p-6 space-y-4">
-      <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
+    <Card className="p-4 md:p-6 space-y-4 cursor-pointer">
+      <div className="flex flex-col sm:flex-row items-start justify-between gap-4" onClick={(e) => {
+        e.preventDefault();
+        window.location.href = `/measure/${displayId}`;
+      }}>
         <div className="flex-1 space-y-2 w-full">
           <div className="flex items-center gap-2 flex-wrap">
             <Badge variant={measure.origin === 'user' ? 'warning' : 'primary'}>
