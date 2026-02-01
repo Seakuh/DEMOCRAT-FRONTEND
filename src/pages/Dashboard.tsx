@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AlertCircle, CheckCircle, Loader, RefreshCw } from 'lucide-react';
+import { AlertCircle, CheckCircle, Loader, RefreshCw, Search } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useMeasures } from '../hooks/useMeasures';
 import { useDipGesetzentwuerfe } from '../hooks/useDipOracle';
@@ -12,6 +12,7 @@ import { syncApi, Drucksache } from '../services/api';
 import { Button } from '../components/ui/Button';
 
 export function Dashboard() {
+  const [searchQuery, setSearchQuery] = useState('');
   const { data: measures, isLoading: measuresLoading, refetch: refetchMeasures } = useMeasures();
   const { data: dipData, isError: dipError } = useDipGesetzentwuerfe();
   const [statusFilter, setStatusFilter] = useState<MeasureStatus | 'all'>('all');
@@ -29,9 +30,14 @@ export function Dashboard() {
     }
   };
 
-  const filteredMeasures = (measures as Drucksache[] | undefined)?.filter((m: Drucksache) =>
-    statusFilter === 'all' ? true : m.drucksachetyp === statusFilter
-  );
+  const filteredMeasures = (measures as Drucksache[] | undefined)?.filter((m: Drucksache) => {
+    const matchesFilter = statusFilter === 'all' ? true : m.drucksachetyp === statusFilter;
+    const matchesSearch = searchQuery === '' ? true : 
+      m.titel.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      m.abstract?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      m.dokumentnummer.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesFilter && matchesSearch;
+  });
 
   const container = {
     hidden: { opacity: 0 },
@@ -61,7 +67,18 @@ export function Dashboard() {
 
       <Composer />
 
-      <div className="flex justify-between items-center">
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+        <input
+          type="text"
+          placeholder="Suchen nach Titel, Inhalt oder Drucksachennummer..."
+          className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+      </div>
+
+      {/* <div className="flex justify-between items-center">
         <h3 className="text-xl font-semibold text-gray-900">Aktuelle Drucksachen</h3>
         <Button 
           variant="ghost" 
@@ -73,9 +90,9 @@ export function Dashboard() {
           <RefreshCw className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} />
           {isSyncing ? 'Synchronisiere...' : 'Jetzt synchronisieren'}
         </Button>
-      </div>
+      </div> */}
 
-      {dipError && (
+      {/* {dipError && (
         <Card className="p-4 bg-warning/10 border-warning">
           <div className="flex items-start gap-3">
             <AlertCircle className="w-5 h-5 text-gray-800 flex-shrink-0 mt-0.5" />
@@ -89,7 +106,7 @@ export function Dashboard() {
             </div>
           </div>
         </Card>
-      )}
+      )} */}
 
       {!dipError && dipData && (
         <Card className="p-4 bg-success/5 border-success/20">

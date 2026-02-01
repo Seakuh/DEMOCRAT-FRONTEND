@@ -30,7 +30,14 @@ export function VoteCard({ measure }: VoteCardProps) {
 
   const confirmVote = () => {
     if (pendingVote) {
-      castVoteMutation.mutate({ measureId: displayId, choice: pendingVote });
+      const voteValue = pendingVote === 'pro' ? 'YES' : pendingVote === 'contra' ? 'NO' : 'ABSTAIN';
+      castVoteMutation.mutate({ measureId: displayId, choice: voteValue as any });
+      
+      // Lokal speichern
+      const localVotes = JSON.parse(localStorage.getItem('my_votes') || '{}');
+      localVotes[displayId] = voteValue;
+      localStorage.setItem('my_votes', JSON.stringify(localVotes));
+      
       setPendingVote(null);
     }
   };

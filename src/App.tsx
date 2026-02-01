@@ -4,6 +4,8 @@ import { AppShell } from './components/AppShell';
 import { Dashboard } from './pages/Dashboard';
 import { MeasureDetail } from './pages/MeasureDetail';
 import { About } from './pages/About';
+import { Impressum } from './pages/Impressum';
+import { Datenschutz } from './pages/Datenschutz';
 import { initializeStorage } from './mock/api';
 
 const queryClient = new QueryClient({
@@ -26,6 +28,8 @@ function App() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/measure/:id" element={<MeasureDetail />} />
             <Route path="/about" element={<About />} />
+            <Route path="/impressum" element={<Impressum />} />
+            <Route path="/datenschutz" element={<Datenschutz />} />
           </Routes>
         </AppShell>
       </BrowserRouter>
