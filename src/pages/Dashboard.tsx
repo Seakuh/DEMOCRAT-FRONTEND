@@ -13,7 +13,7 @@ import { Button } from '../components/ui/Button';
 
 export function Dashboard() {
   const [searchQuery, setSearchQuery] = useState('');
-  const { data: measures, isLoading: measuresLoading, refetch: refetchMeasures } = useMeasures();
+  const { data: measures, isLoading: measuresLoading, refetch: refetchMeasures } = useMeasures(searchQuery);
   const { data: dipData, isError: dipError } = useDipGesetzentwuerfe();
   const [statusFilter, setStatusFilter] = useState<MeasureStatus | 'all'>('all');
   const [isSyncing, setIsSyncing] = useState(false);
@@ -31,12 +31,7 @@ export function Dashboard() {
   };
 
   const filteredMeasures = (measures as Drucksache[] | undefined)?.filter((m: Drucksache) => {
-    const matchesFilter = statusFilter === 'all' ? true : m.drucksachetyp === statusFilter;
-    const matchesSearch = searchQuery === '' ? true : 
-      m.titel.toLowerCase().includes(searchQuery.toLowerCase()) || 
-      m.abstract?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      m.dokumentnummer.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesFilter && matchesSearch;
+    return statusFilter === 'all' ? true : m.drucksachetyp === statusFilter;
   });
 
   const container = {

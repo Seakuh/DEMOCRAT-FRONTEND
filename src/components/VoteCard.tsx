@@ -116,31 +116,31 @@ export function VoteCard({ measure }: VoteCardProps) {
         </div>
       </div>
 
-      <div className="flex flex-col xs:flex-row gap-2 md:gap-3" role="group" aria-label="Abstimmungsoptionen">
-        <Button
-          variant="success"
-          className="flex-1 flex items-center justify-center gap-2 py-2.5 md:py-2"
-          onClick={() => handleVoteClick('pro')}
-          disabled={hasVoted}
-          aria-pressed={userVote?.choice === 'pro'}
-        >
-          <ThumbsUp className="w-4 h-4" />
-          <span className="xs:hidden sm:inline">PRO</span>
-          <span className="hidden xs:inline sm:hidden">PRO</span>
-        </Button>
-
-        <Button
-          variant="danger"
-          className="flex-1 flex items-center justify-center gap-2 py-2.5 md:py-2"
-          onClick={() => handleVoteClick('contra')}
-          disabled={hasVoted}
-          aria-pressed={userVote?.choice === 'contra'}
-        >
-          <ThumbsDown className="w-4 h-4" />
-          <span className="xs:hidden sm:inline">CONTRA</span>
-          <span className="hidden xs:inline sm:hidden">CONTRA</span>
-        </Button>
-
+      <div className="flex flex-col gap-2 md:gap-3" role="group" aria-label="Abstimmungsoptionen">
+        <div className="flex flex-row gap-2 md:gap-3">
+          <Button
+            variant="success"
+            className="flex-1 flex items-center justify-center gap-2 py-2.5 md:py-2"
+            onClick={() => handleVoteClick('pro')}
+            disabled={hasVoted}
+            aria-pressed={userVote?.choice === 'pro'}
+          >
+            <ThumbsUp className="w-4 h-4" />
+            <span className="xs:hidden sm:inline">PRO</span>
+            <span className="hidden xs:inline sm:hidden">PRO</span>
+          </Button>
+          <Button
+            variant="danger"
+            className="flex-1 flex items-center justify-center gap-2 py-2.5 md:py-2"
+            onClick={() => handleVoteClick('contra')}
+            disabled={hasVoted}
+            aria-pressed={userVote?.choice === 'contra'}
+          >
+            <ThumbsDown className="w-4 h-4" />
+            <span className="xs:hidden sm:inline">CONTRA</span>
+            <span className="hidden xs:inline sm:hidden">CONTRA</span>
+          </Button>
+        </div>
         <Button
           variant="neutral"
           className="flex-1 flex items-center justify-center gap-2 py-2.5 md:py-2"

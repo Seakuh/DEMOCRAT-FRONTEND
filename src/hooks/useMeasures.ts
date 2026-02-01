@@ -1,14 +1,16 @@
 import { useQuery } from '@tanstack/react-query';
-import { drucksachenApi } from '../services/api';
+import { drucksachenApi, api, PaginatedResponse, Drucksache } from '../services/api';
 
-export function useMeasures() {
+export function useMeasures(search?: string) {
   return useQuery({
-    queryKey: ['measures'],
+    queryKey: ['measures', search],
     queryFn: async () => {
-      const response = await drucksachenApi.getAll({ limit: 50 });
+      const response = search 
+        ? await api.get<PaginatedResponse<Drucksache>>('/drucksachen/search', { params: { q: search, limit: 50 } })
+        : await drucksachenApi.getAll({ limit: 50 });
       return response.data.data;
     },
-    refetchInterval: 30000, // Alle 30 Sekunden aktualisieren
+    refetchInterval: 30000,
   });
 }
 
