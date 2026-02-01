@@ -72,27 +72,35 @@ const Conferences: React.FC = () => {
           })).sort((a: Diskussionspunkt, b: Diskussionspunkt) => a.startzeit.localeCompare(b.startzeit)),
         }));
 
-        // Sort tagesordnungen by date ascending
+        // Sort tagesordnungen by date descending (newest first)
         parsedTagesordnungen.sort((a, b) => {
           const dateA = a.date.split('.').reverse().join('');
           const dateB = b.date.split('.').reverse().join('');
-          return dateA.localeCompare(dateB);
-        }).reverse();
+          return dateB.localeCompare(dateA);
+        });
 
         setData({ tagesordnungen: parsedTagesordnungen });
         
         // Find and highlight/open the next session
+        // In a descending list, the "next" session is the one with the smallest date >= now
         const now = new Date();
         now.setHours(0, 0, 0, 0);
-        const nextIdx = parsedTagesordnungen.findIndex(to => {
-          const [day, month, year] = to.date.split('.').map(Number);
-          const sessionDate = new Date(year, month - 1, day);
-          return sessionDate >= now;
-        });
+        
+        // Filter sessions that are today or in the future
+        const futureSessions = parsedTagesordnungen
+          .map((to, idx) => ({ to, idx }))
+          .filter(item => {
+            const [day, month, year] = item.to.date.split('.').map(Number);
+            const sessionDate = new Date(year, month - 1, day);
+            return sessionDate >= now;
+          });
 
-        if (nextIdx !== -1) {
-          setNextSessionIndex(nextIdx);
-          setOpenAccordion(nextIdx);
+        // The "next" session is the one among future sessions with the earliest date
+        // Since the list is descending, it's the LAST one in the futureSessions array
+        if (futureSessions.length > 0) {
+          const nextItem = futureSessions[futureSessions.length - 1];
+          setNextSessionIndex(nextItem.idx);
+          setOpenAccordion(nextItem.idx);
         }
 
         setError(null);
@@ -166,7 +174,10 @@ const Conferences: React.FC = () => {
                 <div className="flex items-center gap-2">
                   <span className="font-bold text-gray-900">{to.name}</span>
                   {isNextSession && (
-                    <span className="flex h-2 w-2 rounded-full bg-red-500 animate-pulse" title="Nächste Sitzung"></span>
+                    <div className="flex items-center gap-1.5">
+                      <span className="flex h-2 w-2 rounded-full bg-red-500 animate-pulse"></span>
+                      <span className="text-xs font-bold text-red-600 uppercase tracking-wider">Nächste</span>
+                    </div>
                   )}
                 </div>
                 <span className="text-sm text-gray-600">
