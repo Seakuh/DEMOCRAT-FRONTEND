@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { AlertCircle, CheckCircle, Loader, RefreshCw, Search } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { AlertCircle, CheckCircle, Loader, RefreshCw, Search, Calendar as CalendarIcon, X as XIcon } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useMeasures } from '../hooks/useMeasures';
 import { useDipGesetzentwuerfe } from '../hooks/useDipOracle';
 import { Composer } from '../components/Composer';
@@ -13,7 +13,10 @@ import { Button } from '../components/ui/Button';
 
 export function Dashboard() {
   const [searchQuery, setSearchQuery] = useState('');
-  const { data: measures, isLoading: measuresLoading, refetch: refetchMeasures } = useMeasures(searchQuery);
+  const [dateRange, setDateRange] = useState<{ start: string; end: string }>({ start: '', end: '' });
+  const [showFilters, setShowFilters] = useState(false);
+  
+  const { data: measures, isLoading: measuresLoading, refetch: refetchMeasures } = useMeasures(searchQuery, dateRange);
   const { data: dipData, isError: dipError } = useDipGesetzentwuerfe();
   const [statusFilter, setStatusFilter] = useState<MeasureStatus | 'all'>('all');
   const [isSyncing, setIsSyncing] = useState(false);
@@ -62,15 +65,69 @@ export function Dashboard() {
 
       <Composer />
 
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-        <input
-          type="text"
-          placeholder="Suchen nach Titel, Inhalt oder Drucksachennummer..."
-          className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
+      <div className="space-y-4">
+        <div className="relative flex gap-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Suchen nach Titel, Inhalt oder Drucksachennummer..."
+              className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+          <Button
+            variant="ghost"
+            onClick={() => setShowFilters(!showFilters)}
+            className={`flex items-center gap-2 border ${showFilters ? 'bg-primary/10 border-primary text-primary' : 'bg-white border-gray-200'}`}
+          >
+            <CalendarIcon className="w-5 h-5" />
+            <span className="hidden sm:inline">Zeitraum</span>
+          </Button>
+        </div>
+
+        <AnimatePresence>
+          {showFilters && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="overflow-hidden"
+            >
+              <Card className="p-4 bg-white border-gray-200 shadow-sm flex flex-wrap gap-4 items-end">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Von</label>
+                  <input
+                    type="date"
+                    className="block w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-primary outline-none"
+                    value={dateRange.start}
+                    onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Bis</label>
+                  <input
+                    type="date"
+                    className="block w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-primary outline-none"
+                    value={dateRange.end}
+                    onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
+                  />
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setDateRange({ start: '', end: '' })}
+                  className="text-gray-400 hover:text-danger h-[38px] flex items-center"
+                  disabled={!dateRange.start && !dateRange.end}
+                >
+                  <XIcon className="w-4 h-4 mr-1" />
+                  <span className="leading-none h-5 flex items-center">Filter zurücksetzen</span>
+                </Button>
+              </Card>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* <div className="flex justify-between items-center">
