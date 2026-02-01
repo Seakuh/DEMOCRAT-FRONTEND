@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { AlertCircle, CheckCircle, Loader, RefreshCw, Search, Calendar as CalendarIcon, X as XIcon } from 'lucide-react';
+import { AlertCircle, CheckCircle, Loader, RefreshCw, Search, Calendar as CalendarIcon, X as XIcon, Tag } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useMeasures } from '../hooks/useMeasures';
+import { useMeasures, useCategories } from '../hooks/useMeasures';
 import { useDipGesetzentwuerfe } from '../hooks/useDipOracle';
 import { Composer } from '../components/Composer';
 import { VoteCard } from '../components/VoteCard';
@@ -15,8 +15,14 @@ export function Dashboard() {
   const [searchQuery, setSearchQuery] = useState('');
   const [dateRange, setDateRange] = useState<{ start: string; end: string }>({ start: '', end: '' });
   const [showFilters, setShowFilters] = useState(false);
-  
-  const { data: measures, isLoading: measuresLoading, refetch: refetchMeasures } = useMeasures(searchQuery, dateRange);
+  const [categoryFilter, setCategoryFilter] = useState<string>('');
+
+  const { data: categories } = useCategories();
+  const { data: measures, isLoading: measuresLoading, refetch: refetchMeasures } = useMeasures(
+    searchQuery,
+    dateRange,
+    categoryFilter || undefined
+  );
   const { data: dipData, isError: dipError } = useDipGesetzentwuerfe();
   const [statusFilter, setStatusFilter] = useState<MeasureStatus | 'all'>('all');
   const [isSyncing, setIsSyncing] = useState(false);
@@ -85,6 +91,23 @@ export function Dashboard() {
             <CalendarIcon className="w-5 h-5" />
             <span className="hidden sm:inline">Zeitraum</span>
           </Button>
+          <div className="relative">
+            <Tag className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+            <select
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value)}
+              className={`pl-9 pr-8 py-3 bg-white border rounded-xl shadow-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all appearance-none cursor-pointer text-sm ${
+                categoryFilter ? 'border-primary text-primary' : 'border-gray-200 text-gray-700'
+              }`}
+            >
+              <option value="">Alle Kategorien</option>
+              {categories?.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
         <AnimatePresence>

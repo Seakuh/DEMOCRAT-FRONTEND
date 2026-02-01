@@ -31,6 +31,8 @@ export interface Drucksache {
   abstract: string;
   wahlperiode: number;
   dokumentnummer: string;
+  summary?: string;
+  category?: string;
   votes: {
     YES: number;
     NO: number;
@@ -54,6 +56,7 @@ export const drucksachenApi = {
     page?: number;
     limit?: number;
     ressort?: string;
+    category?: string;
     search?: string;
     sortBy?: string;
     sortOrder?: 'asc' | 'desc';
@@ -62,6 +65,8 @@ export const drucksachenApi = {
   getById: (id: string) => api.get<Drucksache>(`/drucksachen/${id}`),
 
   getRessorts: () => api.get<string[]>('/drucksachen/ressorts'),
+
+  getCategories: () => api.get<string[]>('/drucksachen/categories'),
 };
 
 export const votesApi = {

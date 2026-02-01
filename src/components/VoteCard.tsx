@@ -213,29 +213,31 @@ export function VoteCard({ measure }: VoteCardProps) {
         )}
       </AnimatePresence>
 
-      <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-        <Button
-          variant="ghost"
-          size="sm"
+      <div className="flex flex-wrap items-center justify-between pt-3 border-t border-gray-100 gap-2">
+        <button
+          type="button"
           onClick={() => setShowComments(!showComments)}
-          className="flex items-center gap-1.5 px-2 py-1 h-auto text-[11px] md:text-sm"
+          className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-primary text-primary font-semibold bg-white hover:bg-primary/10 shadow-sm text-[11px] md:text-sm transition-colors`}
         >
           <MessageSquare className="w-3.5 h-3.5 md:w-4 md:h-4" />
           <span>Kommentare</span>
-        </Button>
-
-        <div className="flex items-center gap-3">
+        </button>
+        
+        <div className="flex flex-wrap items-center gap-2">
           {((measure as any).pdfUrl || (measure.sources && measure.sources.length > 0)) && (
             <a
               href={(measure as any).pdfUrl || measure.sources[0].url}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[11px] md:text-sm text-primary font-medium hover:underline flex items-center gap-1"
+              className="inline-flex items-center gap-1 px-3 py-1 rounded-full border border-primary text-primary font-semibold bg-white hover:bg-primary/10 shadow-sm text-[11px] md:text-sm transition-colors"
             >
               PDF <ExternalLink className="w-3 h-3" />
             </a>
           )}
-          <Link to={`/measure/${displayId}`} className="text-[11px] md:text-sm text-primary font-bold hover:underline">
+          <Link
+            to={`/measure/${displayId}`}
+            className="inline-flex items-center gap-1 px-3 py-1 rounded-full border border-primary text-primary font-semibold bg-white hover:bg-primary/10 shadow-sm text-[11px] md:text-sm transition-colors"
+          >
             Details
           </Link>
         </div>

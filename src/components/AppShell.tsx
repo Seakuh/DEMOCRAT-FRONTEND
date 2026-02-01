@@ -173,7 +173,7 @@ export function AppShell({ children }: AppShellProps) {
                 © {new Date().getFullYear()} Direkte Demokratie. Alle Rechte vorbehalten.
               </p>
               <p className="text-xs text-gray-600">
-                MVP Demo – Nicht für den produktiven Einsatz
+                Early Stage
               </p>
             </div>
           </div>
