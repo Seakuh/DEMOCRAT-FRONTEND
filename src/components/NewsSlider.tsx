@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, ExternalLink, Clock } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ExternalLink, Clock, Pause, Play } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface NewsItem {
@@ -16,6 +16,7 @@ const NewsSlider: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
     const fetchNews = async () => {
@@ -38,12 +39,12 @@ const NewsSlider: React.FC = () => {
 
   // Auto-slide every 8 seconds
   useEffect(() => {
-    if (news.length <= 1) return;
+    if (news.length <= 1 || isPaused) return;
     const timer = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % news.length);
     }, 8000);
     return () => clearInterval(timer);
-  }, [news.length]);
+  }, [news.length, isPaused]);
 
   const nextSlide = () => {
     setCurrentIndex((prev) => (prev + 1) % news.length);
@@ -66,78 +67,104 @@ const NewsSlider: React.FC = () => {
   const currentItem = news[currentIndex];
 
   return (
-    <div className="relative group w-full bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden mb-8">
-      <div className="p-6 sm:p-8">
+    <div className="relative group w-full bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl shadow-xl overflow-hidden mb-10 border border-blue-400/20">
+      {/* Decorative background elements */}
+      <div className="absolute top-0 right-0 -mt-20 -mr-20 w-64 h-64 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="absolute bottom-0 left-0 -mb-20 -ml-20 w-64 h-64 bg-blue-400/20 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div className="p-6 sm:p-10 relative z-10">
+        <div className="flex items-center gap-2 mb-6 text-blue-100/80">
+          <div className="h-1 w-8 bg-blue-300 rounded-full"></div>
+          <span className="text-xs font-bold uppercase tracking-[0.2em]">Aktuelle Nachrichten</span>
+        </div>
+
         <AnimatePresence mode="wait">
           <motion.div
             key={currentIndex}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.4 }}
-            className="space-y-4"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            className="space-y-5"
           >
             <div className="flex flex-wrap items-center gap-3">
               {currentItem.category?.map((cat, i) => (
-                <span key={i} className="px-2.5 py-0.5 bg-primary/10 text-primary text-xs font-bold rounded-full uppercase tracking-wider">
+                <span key={i} className="px-3 py-1 bg-white/20 backdrop-blur-md text-white text-[10px] font-black rounded-lg uppercase tracking-wider border border-white/10">
                   {cat}
                 </span>
               ))}
-              <div className="flex items-center text-gray-400 text-xs gap-1">
+              <div className="flex items-center text-blue-100/70 text-xs gap-1.5 ml-auto sm:ml-0">
                 <Clock className="w-3.5 h-3.5" />
-                <span>{new Date(currentItem.pubDate).toLocaleDateString('de-DE', { 
+                <span className="font-medium">{new Date(currentItem.pubDate).toLocaleDateString('de-DE', { 
                   day: '2-digit', 
-                  month: '2-digit', 
-                  year: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit'
+                  month: 'long'
                 })}</span>
               </div>
             </div>
 
-            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 leading-tight">
+            <h3 className="text-2xl sm:text-3xl font-extrabold text-white leading-tight tracking-tight">
               {currentItem.title}
             </h3>
 
-            <p className="text-gray-600 line-clamp-2 text-sm sm:text-base leading-relaxed">
+            <p className="text-blue-50/90 line-clamp-2 text-sm sm:text-lg leading-relaxed font-medium">
               {currentItem.description.replace(/<[^>]*>?/gm, '')}
             </p>
 
-            <a
-              href={currentItem.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-primary font-semibold hover:underline group/link"
-            >
-              Vollständigen Artikel lesen
-              <ExternalLink className="w-4 h-4 transition-transform group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5" />
-            </a>
+            <div className="pt-2">
+              <a
+                href={currentItem.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-blue-700 rounded-xl font-bold text-sm transition-all hover:bg-blue-50 hover:scale-105 active:scale-95 shadow-lg shadow-blue-900/20 group/link"
+              >
+                Vollständigen Artikel lesen
+                <ExternalLink className="w-4 h-4 transition-transform group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5" />
+              </a>
+            </div>
           </motion.div>
         </AnimatePresence>
       </div>
 
       {/* Navigation Controls */}
-      <div className="absolute right-4 bottom-4 flex items-center gap-2">
+      <div className="absolute right-6 bottom-6 flex items-center gap-3 z-20">
+        <button
+          onClick={() => setIsPaused(!isPaused)}
+          className={`p-2.5 rounded-xl backdrop-blur-md border transition-all active:scale-90 ${
+            isPaused 
+              ? 'bg-white text-blue-700 border-white shadow-lg' 
+              : 'bg-white/10 hover:bg-white/20 border-white/10 text-white'
+          }`}
+          aria-label={isPaused ? "Slider fortsetzen" : "Slider pausieren"}
+          title={isPaused ? "Fortsetzen" : "Pausieren"}
+        >
+          {isPaused ? <Play className="w-5 h-5 fill-current" /> : <Pause className="w-5 h-5 fill-current" />}
+        </button>
+
+        <div className="h-8 w-px bg-white/20 mx-1"></div>
+
         <button
           onClick={prevSlide}
-          className="p-2 rounded-full bg-gray-50 hover:bg-gray-100 border border-gray-200 text-gray-600 transition-colors"
+          className="p-2.5 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/10 text-white transition-all active:scale-90"
           aria-label="Vorherige News"
         >
           <ChevronLeft className="w-5 h-5" />
         </button>
-        <div className="flex gap-1.5 px-2">
+        
+        <div className="flex gap-2 px-1">
           {news.slice(0, 5).map((_, i) => (
-            <div
+            <button
               key={i}
-              className={`h-1.5 rounded-full transition-all duration-300 ${
-                i === currentIndex ? 'w-6 bg-primary' : 'w-1.5 bg-gray-200'
+              onClick={() => setCurrentIndex(i)}
+              className={`h-1.5 rounded-full transition-all duration-500 ${
+                i === currentIndex ? 'w-8 bg-white' : 'w-1.5 bg-white/30 hover:bg-white/50'
               }`}
             />
           ))}
         </div>
+
         <button
           onClick={nextSlide}
-          className="p-2 rounded-full bg-gray-50 hover:bg-gray-100 border border-gray-200 text-gray-600 transition-colors"
+          className="p-2.5 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/10 text-white transition-all active:scale-90"
           aria-label="Nächste News"
         >
           <ChevronRight className="w-5 h-5" />
