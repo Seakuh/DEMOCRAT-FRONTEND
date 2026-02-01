@@ -68,7 +68,7 @@ const Conferences: React.FC = () => {
             titel: dp.titel || '',
             articleId: dp.articleId || undefined,
             top: dp.top || undefined,
-          })).sort((a: Diskussionspunkt, b: Diskussionspunkt) => a.startzeit.localeCompare(b.startzeit)).reverse(),
+          })).sort((a: Diskussionspunkt, b: Diskussionspunkt) => a.startzeit.localeCompare(b.startzeit)),
         }));
 
         // Sort tagesordnungen by date ascending
@@ -77,7 +77,7 @@ const Conferences: React.FC = () => {
           const dateA = a.date.split('.').reverse().join('');
           const dateB = b.date.split('.').reverse().join('');
           return dateA.localeCompare(dateB);
-        });
+        }).reverse();
 
         setData({ tagesordnungen: parsedTagesordnungen });
         setError(null);
