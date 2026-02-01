@@ -77,7 +77,7 @@ export function AppShell({ children }: AppShellProps) {
 
         {/* Mobile Navigation */}
         {isMobileMenuOpen && (
-          <div className="md:hidden bg-primary border-b border-white/10 animate-in slide-in-from-top duration-200">
+          <div className="md:hidden bg-gray-900 border-b border-white/10 animate-in slide-in-from-top duration-200">
             <div className="px-4 pt-2 pb-6 space-y-1">
               <Link
                 to="/"
