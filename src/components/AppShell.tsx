@@ -1,6 +1,6 @@
-import { ReactNode } from 'react';
+import { ReactNode, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Vote, Info } from 'lucide-react';
+import { Vote, Info, Menu, X, User } from 'lucide-react';
 import { getCurrentUser } from '../mock/user';
 
 interface AppShellProps {
@@ -9,46 +9,106 @@ interface AppShellProps {
 
 export function AppShell({ children }: AppShellProps) {
   const user = getCurrentUser();
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-300 sticky top-0 z-50">
+      <header className={`glass-header ${isScrolled ? 'glass-header-scrolled' : ''}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <Link to="/" className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-                <Vote className="w-6 h-6 text-white" />
+          <div className="flex items-center justify-between h-16 md:h-20">
+            <Link to="/" className="flex items-center gap-2 md:gap-3 group">
+              <div className="w-8 h-8 md:w-10 md:h-10 bg-primary rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform shadow-lg shadow-primary/20">
+                <Vote className="w-5 h-5 md:w-6 md:h-6 text-white" />
               </div>
-              <div>
-                <h1 className="text-xl font-bold text-gray-900">
-                  Direkte Demokratie
+              <div className="flex flex-col">
+                <h1 className="text-base md:text-xl font-black text-gray-900 leading-none tracking-tight">
+                  DEMOCRAT
                 </h1>
-                <p className="text-xs text-gray-600">Abstimmung über Gesetzesänderungen</p>
+                <p className="hidden sm:block text-[10px] md:text-xs text-gray-500 font-medium">Direkte Demokratie</p>
               </div>
             </Link>
 
-            <nav className="flex items-center gap-6">
+            {/* Desktop Navigation */}
+            <nav className="hidden md:flex items-center gap-8">
               <Link
                 to="/"
-                className="text-sm font-medium text-gray-700 hover:text-primary transition-colors"
+                className="text-sm font-bold text-gray-600 hover:text-primary transition-colors"
               >
                 Abstimmungen
               </Link>
               <Link
                 to="/about"
-                className="text-sm font-medium text-gray-700 hover:text-primary transition-colors flex items-center gap-1"
+                className="text-sm font-bold text-gray-600 hover:text-primary transition-colors flex items-center gap-1.5"
               >
                 <Info className="w-4 h-4" />
                 Info
               </Link>
-              <div className="pl-4 border-l border-gray-300">
-                <div className="text-xs text-gray-600">
-                  {user.displayName}
+              <div className="flex items-center gap-3 pl-6 border-l border-gray-200">
+                <div className="flex flex-col items-end">
+                  <span className="text-xs font-bold text-gray-900">{user.displayName}</span>
+                  <span className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Bürger</span>
+                </div>
+                <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center border border-gray-200">
+                  <User className="w-4 h-4 text-gray-400" />
                 </div>
               </div>
             </nav>
+
+            {/* Mobile Menu Button */}
+            <div className="md:hidden flex items-center gap-4">
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              </button>
+            </div>
           </div>
         </div>
+
+        {/* Mobile Navigation */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden bg-white border-b border-gray-100 animate-in slide-in-from-top duration-200">
+            <div className="px-4 pt-2 pb-6 space-y-1">
+              <Link
+                to="/"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex items-center gap-3 px-4 py-3 text-base font-bold text-gray-700 hover:bg-gray-50 rounded-xl transition-colors"
+              >
+                <Vote className="w-5 h-5 text-primary" />
+                Abstimmungen
+              </Link>
+              <Link
+                to="/about"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex items-center gap-3 px-4 py-3 text-base font-bold text-gray-700 hover:bg-gray-50 rounded-xl transition-colors"
+              >
+                <Info className="w-5 h-5 text-primary" />
+                Info
+              </Link>
+              <div className="mt-4 pt-4 border-t border-gray-100 px-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center border border-gray-200">
+                    <User className="w-5 h-5 text-gray-400" />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-bold text-gray-900">{user.displayName}</span>
+                    <span className="text-xs text-gray-500 uppercase tracking-widest font-bold">Bürger</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
