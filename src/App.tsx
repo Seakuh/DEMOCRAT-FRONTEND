@@ -7,6 +7,7 @@ import { About } from './pages/About';
 import { Impressum } from './pages/Impressum';
 import { Datenschutz } from './pages/Datenschutz';
 import { initializeStorage } from './mock/api';
+import Conferences from './components/Conferences';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -26,6 +27,7 @@ function App() {
         <AppShell>
           <Routes>
             <Route path="/" element={<Dashboard />} />
+            <Route path="/conferences" element={<Conferences />} />
             <Route path="/measure/:id" element={<MeasureDetail />} />
             <Route path="/about" element={<About />} />
             <Route path="/impressum" element={<Impressum />} />

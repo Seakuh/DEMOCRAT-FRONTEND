@@ -1,6 +1,6 @@
 import { ReactNode, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Vote, Info, Menu, X, User, Check, CheckCircle } from 'lucide-react';
+import { Vote, Info, Menu, X, User, Check, CheckCircle, Calendar } from 'lucide-react';
 import { getCurrentUser } from '../mock/user';
 
 interface AppShellProps {
@@ -39,12 +39,20 @@ export function AppShell({ children }: AppShellProps) {
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center gap-8">
+           
               <Link
                 to="/"
                 className="text-sm font-bold text-white hover:text-white/80 transition-colors flex items-center gap-1.5"
               >
               <CheckCircle className="w-4 h-4 text-white" />
                 Abstimmungen
+              </Link>
+            <Link
+                to="/conferences"
+                className="text-sm font-bold text-white hover:text-white/80 transition-colors flex items-center gap-1.5"
+              >
+              <Calendar className="w-4 h-4 text-white" />
+                Sitzungen
               </Link>
               <Link
                 to="/about"

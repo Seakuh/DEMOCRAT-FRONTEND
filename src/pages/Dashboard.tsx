@@ -9,6 +9,7 @@ import { Card } from '../components/ui/Card';
 import { MeasureStatus } from '../types';
 import { syncApi, Drucksache } from '../services/api';
 import { Button } from '../components/ui/Button';
+import Conferences from '../components/Conferences';
 
 export function Dashboard() {
   const [searchQuery, setSearchQuery] = useState('');
