@@ -152,7 +152,7 @@ export function Dashboard() {
         </div>
 
         {measuresLoading ? (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="flex flex-col gap-6">
             {[...Array(4)].map((_, i) => (
               <VoteCardSkeleton key={i} />
             ))}
@@ -162,7 +162,7 @@ export function Dashboard() {
             variants={container}
             initial="hidden"
             animate="show"
-            className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+            className="flex flex-col gap-6"
           >
             {filteredMeasures.map((measure: Drucksache) => (
               <motion.div key={measure._id} variants={item}>
