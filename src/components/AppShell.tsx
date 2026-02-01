@@ -1,6 +1,6 @@
 import { ReactNode, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Vote, Info, Menu, X, User, Check, CheckCircle, Calendar } from 'lucide-react';
+import { Vote, Info, Menu, X, User, Check, CheckCircle, Calendar, Newspaper } from 'lucide-react';
 import { getCurrentUser } from '../mock/user';
 
 interface AppShellProps {
@@ -46,6 +46,13 @@ export function AppShell({ children }: AppShellProps) {
               >
               <CheckCircle className="w-4 h-4 text-white" />
                 Abstimmungen
+              </Link>
+            <Link
+                to="/news"
+                className="text-sm font-bold text-white hover:text-white/80 transition-colors flex items-center gap-1.5"
+              >
+              <Newspaper className="w-4 h-4 text-white" />
+                News
               </Link>
             <Link
                 to="/conferences"
@@ -95,6 +102,14 @@ export function AppShell({ children }: AppShellProps) {
               >
                 <Vote className="w-5 h-5 text-white" />
                 Abstimmungen
+              </Link>
+              <Link
+                to="/news"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex items-center gap-3 px-4 py-3 text-base font-bold text-white hover:bg-white/10 rounded-xl transition-colors"
+              >
+                <Newspaper className="w-5 h-5 text-white" />
+                News
               </Link>
               <Link
                 to="/conferences"
